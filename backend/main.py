@@ -33,22 +33,15 @@ def temperature(): # vcgencmd is Raspberrypi specific so it would crash on windo
     ).decode().strip()
     return {"temperature": temp}
 
-@app.get("/stats/battery")
-def battery_info():
-    battery = psutil.sensors_battery()
-    return {"Battery_percentage": battery[0],
-            "charger_plugged": battery[2]}
-
 @app.get("/stats/network")
 def addrs():
     network_address = psutil.net_if_addrs()
-    ipv4 = network_address["eth0"][0][1]
-    ipv6 = network_address["eth0"][1][1]
+    ipv4 = network_address["wlan0"][0][1]
+    ipv6 = network_address["wlan0"][1][1]
     return {"IPV4": ipv4, "IPV6":ipv6}
 
 @app.get("/stats")
 def all_info():
-    battery = battery_info()
     network= addrs()
     try:
         temp = temperature()
@@ -58,7 +51,6 @@ def all_info():
     mem = memory()
     disk_usage = disk()
     return {"status":{
-        "Battery_info": battery,
         "Network": network,
         "temp": temp,
         "cpu_per" : cpu_percentage,
